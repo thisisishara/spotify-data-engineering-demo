@@ -1,7 +1,7 @@
 import requests
-# import sqlalchemy
+import sqlalchemy
 import pandas as pd
-# from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker
 import json
 from datetime import datetime
 import datetime as dt
@@ -9,7 +9,36 @@ import sqlite3
 
 DB_LOCATION = "sqlite:///my_tracks.sqlite"
 USER_ID = "thisisishara"
-TOKEN = "BQBL-yeMBTwnOFd0Y_E2CWoyD8PBv-InImdsX5_FqHBjm4kKZdz-1mQInjqJrWyLxw21G1fePbyYkghRBYpKXeR19BSEV4TYyeOvIKWvQymEoQmpfR0DjlAUBgbSUezSyIDOvmdxEzroGZvMBDdX2-oFa_qqSTKHK8-7"
+TOKEN = "BQClQFtGTEd6TN2Wcomr4aqWeJyq3aKZoVZUK2yJ5FzePTFZsAoeDOZF0EPZCFEz3gySFYyxn8sQRJHpfSGnPLlXc7SP-K-SgUbsJ7y1m6RhTi9mGxR4xAflv89JY9UcjpWomVPFJ_b8c55AkOd8Lj8C2tVi_AAlabW3"
+
+
+def validate_songs_data(df: pd.DataFrame):
+    # Empty Dataset check
+    if df.empty:
+        print("The recently played song list is empty. Exiting execution.")
+        return False
+
+    # Business Key violation check
+    if pd.Series(df["played_at"]).is_unique:
+        pass
+    else:
+        raise Exception("Primary Key constraint violated.")
+
+    # Null check
+    if df.isnull().values.any():
+        raise Exception("Null values are present in the dataset. Exiting execution.")
+
+    # Timestamp check
+    ydy_t = datetime.now() - dt.timedelta(days=1)
+    ydy_t = ydy_t.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    timestamps_l = df["timestamp"].tolist()
+    for t_stamp in timestamps_l:
+        if datetime.strptime(t_stamp, "%Y-%m-%d") < ydy_t:
+            raise Exception(f"{datetime.strptime(t_stamp, '%Y-%m-%d')}\nIncompatible Timestamp found. Exiting execution.")
+
+    return True
+
 
 if __name__ == '__main__':
 
@@ -30,6 +59,11 @@ if __name__ == '__main__':
 
     # print(data)
 
+    if "error" in data:
+        print("Couldn't acquire recently played song data.\n{status}: {msg}.".format(status=data["error"]["status"],
+                                                                                     msg=data["error"]["message"]))
+        quit()
+
     song_names = []
     artist_names = []
     played_times = []
@@ -49,5 +83,35 @@ if __name__ == '__main__':
     }
 
     songs_dataframe = pd.DataFrame(song_dict, columns=song_dict.keys())
+    # print(songs_dataframe)
 
-    print(songs_dataframe)
+    # Data validation
+    if not validate_songs_data(songs_dataframe):
+        print("Data validation failed.")
+        quit()
+
+    print("valid data")
+
+    # Load Data
+    engine = sqlalchemy.create_engine(DB_LOCATION)
+    conn = sqlite3.connect('my_tracks.sqlite')
+    cursor = conn.cursor()
+
+    sql_q = """
+            CREATE TABLE IF NOT EXISTS my_recent_tracks(
+                song_name VARCHAR(200),
+                artist_name VARCHAR(200),
+                played_at VARCHAR(200),
+                timestamp VARCHAR(200),
+                CONSTRAINT my_recent_tracks_pk PRIMARY KEY (played_at)
+            );           
+            """
+    cursor.execute(sql_q)
+
+    try:
+        songs_dataframe.to_sql("my_recent_tracks", engine, index=False, if_exists="append")
+    except:
+        print("Possible duplication. Data insertion aborted.")
+
+    conn.close()
+    print("Connection closed.\nData insertion succeeded.")
