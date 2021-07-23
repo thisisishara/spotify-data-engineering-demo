@@ -31,3 +31,19 @@ Simple Python ETL Project to extract Spotify Playback history using SpotifyAPI a
 # Airflow user account creation
 *. irflow users  create --role Admin --username admin --email admin --firstname admin --lastname admin --password admin
 *. [kill webserver: sudo pkill -9 -f "airflow scheduler"]
+
+# Automating Spotify Authorization Token Generation
+*. Auth tokens are expired within 15 minutes or so, thus the token hardcoding is not recommended.
+*. Follow the following link to see how to get a refresh token by using a client_id and a client_secret by creating a spotify application
+    https://developer.spotify.com/documentation/general/guides/authorization-guide/
+*. For a more comprehendable explaination, see the following link
+    https://www.youtube.com/watch?v=-FsFT6OwE1A
+
+# References
+*. [1]. https://www.youtube.com%2Fwatch%3Fv%3Di25ttd32-eo&usg=AOvVaw0uLUZHPThYNFGWls6TCrRZ, "ETL Automation with Airflow"
+*. [2]. https://www.youtube.com/watch?v=-FsFT6OwE1A, "Automating with Spotify Token Refreshing"
+
+# Disclaimer
+*. the original refresh.py class is not included here for security concerns. please refer the refresh_dummy.py class for the sample code
+*. the workflow setup may differ depending on the os and dev environments used
+*. airflow will not directly run on windows. use alternatives or use WSL as a workaround

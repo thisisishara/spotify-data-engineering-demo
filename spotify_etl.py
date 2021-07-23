@@ -7,6 +7,11 @@ from datetime import datetime
 import datetime as dt
 import sqlite3
 
+from sys import path
+path.append("/home/ishara/PythonProjects/Spotify_Data_Engineering_Project/")
+
+from refresh import Refresh
+
 def validate_songs_data(df: pd.DataFrame):
     # Empty Dataset check
     if df.empty:
@@ -35,11 +40,17 @@ def validate_songs_data(df: pd.DataFrame):
     return True
 
 
+def refresh_token():
+    print("Refreshing the Token")
+    token_refresher = Refresh()
+    return token_refresher.refresh()
+
+
 def run_spotify_etl():
 
     db_loc = "sqlite:///my_tracks.sqlite"
-    user_id = "thisisishara"
-    token = "BQDeDjuOJTzxcGsZgadXFtMOWh1qO1gynyZkjUdTiJJmo0vLEOd2gXwH4c-AtAY3CGCA1c-YiMs04UbOunhkuBvi5bm5Z0d-Ql1jjzmAT0VLv2oEVeSMdMVtRElqGDNLljHlZ10ACwHJijoHLYTH7MCNNJxaZASolHEO"
+    user_id = "vb6sxuhuwa9u28uuyh6wrovv4"
+    token = refresh_token()
 
     headers = {
         "Accept": "application/json",
