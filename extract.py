@@ -9,7 +9,7 @@ import sqlite3
 
 DB_LOCATION = "sqlite:///my_tracks.sqlite"
 USER_ID = "thisisishara"
-TOKEN = "BQClQFtGTEd6TN2Wcomr4aqWeJyq3aKZoVZUK2yJ5FzePTFZsAoeDOZF0EPZCFEz3gySFYyxn8sQRJHpfSGnPLlXc7SP-K-SgUbsJ7y1m6RhTi9mGxR4xAflv89JY9UcjpWomVPFJ_b8c55AkOd8Lj8C2tVi_AAlabW3"
+TOKEN = "BQAVnmSQs9HB15iOAH2-ItzWDyLfWy3sTpKZcC28dedCCmNxmJgLWan0GM7-VEVtUraeMbwben-Yk0t9NNfyQAMhmcyFzGIOyNHUxOcBcFd2VVHeCLEtQdLToRVWX1ZDA6ZKgo0ODA6IlwGIlBSqlI9uEMWZvlONn_jj"
 
 
 def validate_songs_data(df: pd.DataFrame):
